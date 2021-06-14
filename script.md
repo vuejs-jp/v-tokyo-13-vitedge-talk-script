@@ -1,23 +1,22 @@
 # Introduction
 
-Hi everyone, my name is Fran Dios, I'm a fullstack developer who loves JavaScript in general, and Vue.js in particular.
-Today, we are going to learn about Edge Computing in general and how to do Server Side Rendering using Vue.js at the edge. For that, we are going to see three different technologies:
+皆さん、こんにちは。私の名前は Fran Dios です。JavaScript 全般、特に Vue.js が大好きなフルスタックエンジニアです。今日は、一般的なエッジコンピューティングと、エッジで Vue.js を使ってサーバーサイドレンダリングを行う方法について学びます。そのために、3 つの異なる技術を見ていきましょう。
 
-- Cloudflare Workers, a disruptive serverless platform to deploy JavaScript code to the edge.
-- Vite, which is a new frontend tooling to develop and build web apps.
-- And then, how to combine them in order to run our web apps at the edge using a framework that I'm currently working on called Vitedge.
+- JavaScript コードをエッジにデプロイするための破壊的なサーバーレスプラットフォームである「Cloudflare Workers」。
+- Web アプリを開発・構築するための新しいフロントエンドツールである「Vite」。
+- そして、私が現在取り組んでいる「Vitedge」というフレームワークを使って、エッジでウェブアプリを実行するために、これらをどのように組み合わせるか。
 
-I hope you find this topic as interesting as I do and enjoy the talk. Let's get started.
+私と同じようにこのテーマに興味を持っていただき、トークを楽しんでいただければ幸いです。では、さっそく始めましょう。
 
 # サーバーレスの誤解
 
-First of all, let me put you in context. I bet that you have heard about the word "serverless" before, also known as "cloud functions" or "lambda". When I first heard about this a few years ago, I imagined that it would allow my APIs to run world-wide with low latency and high scalability. In reality, this "serverless" was only half of what I expected.
+まず最初に、文脈を説明します。皆さんは「サーバーレス」という言葉を聞いたことがあると思います。「クラウド機能」や「ラムダ」とも呼ばれています。私が数年前に初めてこの言葉を聞いたときは、自分の作った API が低レイテンシーかつ高いスケーラビリティを持って世界中で動作するようになると想像しました。実際には、この「サーバーレス」は、私が期待していたものの半分しか実現できませんでした。
 
-It's true that it is scalable and has a metered billing. However, in general, it only runs in 1 place in the world (normally in the US).
+確かにスケーラブルで、従量制の課金があるのは事実です。しかし、一般的には世界の 1 箇所（通常は米国）でしか稼働しません。
 
-On top of that, these cloud functions suffer from something called "cold start", which basically means that our function might be removed from the server's memory a while after it runs, and then, in the next request, the server will need to load the function in memory again. This process can take some time, as we can see in this graph (see image). AWS: up to 0.5 seconds; GCP up to 1.5 seconds; Azure up to 4 seconds.
+その上、これらのクラウド機能は「コールドスタート」と呼ばれるものに悩まされています。これは基本的に、私たちの関数が実行されてからしばらくすると、サーバーのメモリから削除される可能性があり、次のリクエストでは、サーバーが再びメモリに関数をロードする必要があることを意味しています。このプロセスは、このグラフ（画像参照）でわかるように、ある程度の時間がかかることがあります。AWS：最大で 0.5 秒、GCP：最大で 1.5 秒、Azure：最大で 4 秒です。
 
-Apart from that, cloud functions are stateless, meaning that its memory and data cannot be shared, generally, among different requests. This is normally good because it helps with memory leaks and other errors. However, it might make some tasks more complicated than in a "stateful" environment, such as authentication and saving user sessions. You would need a separate service like Redis to help with this.
+それとは別に、クラウドの機能はステートレスであり、そのメモリやデータは、一般的に異なるリクエスト間で共有することができません。これは、メモリリークやその他のエラーを防ぐことができるので、通常は良いことです。しかし、認証やユーザーセッションの保存など、「ステートフル」な環境に比べて作業が複雑になる場合もあります。このような場合には、Redis のような別のサービスが必要になります。
 
 # 真のサーバーレスとは: Cloudflare Workers (1)
 
@@ -52,11 +51,11 @@ Now, this is a lot of information but, what can we actually build with Workers?
 
 # Workers の例
 
-These are some of the examples that workers are commonly used for.
+これらは、ワーカーが一般的に使用される例です。
 
-- A/B testing. We can return different information based on user location or any other thing.
-- Anlytics. To some degree, we can have good analytics directly from the Worker without pushing SDKs to the browser.
-- Something I had to do recently: Show a banner in a Japanese online shop only to overseas customers. Users within Japan get an empty response whereas overseas users get the banner.
+- A/B テスト。ユーザーの位置情報などに基づいて、異なる情報を返すことができます。
+- Anlytics。ある程度までは、SDK をブラウザにプッシュすることなく、Worker から直接、優れたアナリティクスを行うことができます。
+- 最近しなければならなかったことがあります。日本のオンラインショップで、海外のお客様にだけバナーを表示することです。日本国内のユーザーには何も表示されませんが、海外のユーザーにはバナーが表示されます。
 
 # Workers の欠点
 
@@ -88,47 +87,47 @@ And this is precisely what I've been working on during the last months. Running 
 
 # Vitedge: エッジで動作する SSR (1)
 
-そして、これを私はVitedgeと呼んでいますが、Viteアプリケーションを作ってそれをCouldflare Workersにデプロイすると、ページコンポーネントのHTMLをエンドユーザーに近いエッジでレンダリングすることができます。複雑に聞こえるかもしれませんが、それはシングルページアプリケーションの開発するとき同じくらい簡単です。
+そして、これを私は Vitedge と呼んでいますが、Vite アプリケーションを作ってそれを Couldflare Workers にデプロイすると、ページコンポーネントの HTML をエンドユーザーに近いエッジでレンダリングすることができます。複雑に聞こえるかもしれませんが、それはシングルページアプリケーションの開発するとき同じくらい簡単です。
 
-したがって、CDNから静的な`index.html`をアップロードして提供する代わりに、CNDノード自身が`index.html`ファイルをレンダリングし、次のリクエストのためにエッジにキャッシュします。そのため、次のリクエストでは、あたかも静的なファイルであるかのようにファイルを取得します。
+したがって、CDN から静的な`index.html`をアップロードして提供する代わりに、CND ノード自身が`index.html`ファイルをレンダリングし、次のリクエストのためにエッジにキャッシュします。そのため、次のリクエストでは、あたかも静的なファイルであるかのようにファイルを取得します。
 
 # Vitedge: エッジで動作する SSR (2)
 
 おそらく、以下のようないくつかのメリットを想像できます:
 
-- より良いロード時間、遅いビルドなしによるSEO、動的なコンテンツをサポート
+- より良いロード時間、遅いビルドなしによる SEO、動的なコンテンツをサポート
 - 素晴らしいパフォーマンス
 - 構成可能なキャッシュ、つまり、私達の（データベースやコンテンツ管理システムからの）データが特定のルートで変更されたことがわかっている場合は、そのルートをキャッシュから削除し、他のルートはそのままにしておくことができるのです。そのため、そのルートに対する次のリクエストは、新しいデータを使用することになります。
-- Vitedgeはファイルシステムによるルートに基づいたAPIエントリポイントを作成する方法も提供します。
-- そして、もちろん、Viteがもたらす良いDXもすべてあります。
+- Vitedge はファイルシステムによるルートに基づいた API エントリポイントを作成する方法も提供します。
+- そして、もちろん、Vite がもたらす良い DX もすべてあります。
 
-SSRは多くのアプリケーションに適していいるかもしれまんが、特定のプロジェクトにおいては適していないかもしれないということも、私は伝えておきたいと思います。プロジェクトによっては、SPAと静的サイトジェネレーターは良い選択となるでしょう。
+SSR は多くのアプリケーションに適していいるかもしれまんが、特定のプロジェクトにおいては適していないかもしれないということも、私は伝えておきたいと思います。プロジェクトによっては、SPA と静的サイトジェネレーターは良い選択となるでしょう。
 
-それでは、ViteアプリケーションにVitedgeをインストールして使用する方法を見てみましょう。
+それでは、Vite アプリケーションに Vitedge をインストールして使用する方法を見てみましょう。
 
 # Vitedge: エッジで動作する SSR (3)
 
-もし、まだViteに慣れていない方は、通常のアプリは次のようになっています。`vite.config`ファイルとVue.jsアプリケーション向けの通常の"source"フォルダがあり、ページコンポーネント、ルート、ルートコンポーネント(App)、そしてVueアプリ用のメインエントリファイルがあります。
+もし、まだ Vite に慣れていない方は、通常のアプリは次のようになっています。`vite.config`ファイルと Vue.js アプリケーション向けの通常の"source"フォルダがあり、ページコンポーネント、ルート、ルートコンポーネント(App)、そして Vue アプリ用のメインエントリファイルがあります。
 
-Vitedgeをインストールする方法は、単純にそのプラグインをViteの設定ファイルに追加し、Vueアプリケーションのエントリポイントを次のように変更します。Vitedgeは環境に応じて、`createApp`または`createSsrApp`を呼び出します。このメインフックでは、i18n、Vuex、PiniaなどあらゆるVue.jsモジュールをセットアップすることができます。
+Vitedge をインストールする方法は、単純にそのプラグインを Vite の設定ファイルに追加し、Vue アプリケーションのエントリポイントを次のように変更します。Vitedge は環境に応じて、`createApp`または`createSsrApp`を呼び出します。このメインフックでは、i18n、Vuex、Pinia などあらゆる Vue.js モジュールをセットアップすることができます。
 
-デフォルトでは、VueのSPAのように、Vitedgeではクライアントそしてサーバー向けに1つのエントリポイントを持つ代わりに1つのエントリポイントを持ちます。これによりSSRを簡単に使い始めることができます。ただ、必要に応じて2つの独立したエントリポイントを使用することもサポートされています。
+デフォルトでは、Vue の SPA のように、Vitedge ではクライアントそしてサーバー向けに 1 つのエントリポイントを持つ代わりに 1 つのエントリポイントを持ちます。これにより SSR を簡単に使い始めることができます。ただ、必要に応じて 2 つの独立したエントリポイントを使用することもサポートされています。
 
 # Vitedge: エッジで動作する SSR (4)
 
-それでは、APIからデータを取得するページコンポーネントの作成方法について説明します。
-Vitedgeでは、フロントエンド向けに`source`フォルダの隣にある`functions`というフォルダにAPIを配置します。
+それでは、API からデータを取得するページコンポーネントの作成方法について説明します。
+Vitedge では、フロントエンド向けに`source`フォルダの隣にある`functions`というフォルダに API を配置します。
 
 ここでは、ブログ記事を表示するためのシンプルなページコンポーネントを用意し、"post"というルートに"/posts/:slug"というパスで配置しています。
-propsからブログポストデータを取得するために、ページコンポーネントを期待しているのが分かります。そして、それから`vueuse/head`を使っていくつかのmetaタグを書くためにそのデータを使い、DOMにいくつかのコンテンツを表示しています。
+props からブログポストデータを取得するために、ページコンポーネントを期待しているのが分かります。そして、それから`vueuse/head`を使っていくつかの meta タグを書くためにそのデータを使い、DOM にいくつかのコンテンツを表示しています。
 
-さて、このPostオブジェクトをどのようにしてページコンポーネントに提供するのでしょうか？覚えていると思いますが、このページのルートは `post`と呼ばれています。"functions/props/"ディレクトリ配下に、ルートと同じ名前の新しいファイル "functions/props/post.ts"（TSまたはJS）を作成する必要があります。この関数は、ブラウザからこのルートにアクセスするたびに呼び出され、その結果をpropsとしてページコンポーネントに渡します。ルートは"slug"パラメータを期待しており、これは実際にprops関数の引数で提供されていることがわかります。
+さて、この Post オブジェクトをどのようにしてページコンポーネントに提供するのでしょうか？覚えていると思いますが、このページのルートは `post`と呼ばれています。"functions/props/"ディレクトリ配下に、ルートと同じ名前の新しいファイル "functions/props/post.ts"（TS または JS）を作成する必要があります。この関数は、ブラウザからこのルートにアクセスするたびに呼び出され、その結果を props としてページコンポーネントに渡します。ルートは"slug"パラメータを期待しており、これは実際に props 関数の引数で提供されていることがわかります。
 
 ここでは、この"slug"パラメータを使って、データベースやコンテンツマネジメントシステムから`fetch`で投稿情報を取得し、その結果を返すことができます。
 
-とてもシンプルですね。この関数コードはWebアプリケーションにバンドルされていないので、APIキーなどのプライベートな情報をここに持つことができます。また、ここではキャッシュ値を指定していることに注目してください。これは、このページコンポーネントのレンダリングされたHTMLが、この秒数の間、エッジにキャッシュされることを意味します。この記事のCMSやDBのデータが変更されたことに気づいたら、Cloudflareのキャッシュにリクエストしてこの情報を削除し、次のリクエストで新しいデータを使用できるようにします。
+とてもシンプルですね。この関数コードは Web アプリケーションにバンドルされていないので、API キーなどのプライベートな情報をここに持つことができます。また、ここではキャッシュ値を指定していることに注目してください。これは、このページコンポーネントのレンダリングされた HTML が、この秒数の間、エッジにキャッシュされることを意味します。この記事の CMS や DB のデータが変更されたことに気づいたら、Cloudflare のキャッシュにリクエストしてこの情報を削除し、次のリクエストで新しいデータを使用できるようにします。
 
-ここには、`.env`やsitemapといったファイルがあることに注目してください。
-`.env`ファイルには、APIで利用可能な環境変数が格納されています。一方、sitemapファイルは、この関数(propsハンドラ)のようなものですが、ブラウザで`/sitemap.xml`や`/sitemap.txt`にアクセスしたときに呼び出されるので、DBやCMSのデータに依存した動的なサイトマップを返すことができます。もちろん、キャッシュにも対応しています。サイトマップの代わりに、`robots`ファイルや、GraphQLサーバーをセットアップする`graphql`ファイルを用意することもできます。
+ここには、`.env`や sitemap といったファイルがあることに注目してください。
+`.env`ファイルには、API で利用可能な環境変数が格納されています。一方、sitemap ファイルは、この関数(props ハンドラ)のようなものですが、ブラウザで`/sitemap.xml`や`/sitemap.txt`にアクセスしたときに呼び出されるので、DB や CMS のデータに依存した動的なサイトマップを返すことができます。もちろん、キャッシュにも対応しています。サイトマップの代わりに、`robots`ファイルや、GraphQL サーバーをセットアップする`graphql`ファイルを用意することもできます。
 
-今日の発表はになります。Vitedgeについてもっと知りたい方は、https://vitedge.js.org をご覧ください。
+今日の発表はになります。Vitedge についてもっと知りたい方は、https://vitedge.js.org をご覧ください。
