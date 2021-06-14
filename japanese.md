@@ -20,34 +20,31 @@
 
 # 真のサーバーレスとは: Cloudflare Workers (1)
 
-In contrast with the "traditional" serverless enviornment, the company Cloudflare released a while ago a new disruptive technology called Cloudflare Workers. Workers are all what I thought that the original "serverless" would be:
+「これまでの」サーバーレス環境とは対照的に、Cloudflare社は少し前にCloudflare Workers(Workers)と呼ばれる新しい破壊的な技術をリリースしました。Workersは、元来私が「サーバーレス」だと考えていたものです。
 
-It enables us to deploy our JavaScript code once, and run it in more than 200 locations all over the world. There are nodes even in Africa and China.
+Workersを使うことで、一度JavaScriptをデプロイすれば世界中の200ヶ所以上のロケーションで動作させることができるようになります。（訳註: アメリカのみならず）アフリカや中国にもノードが存在するのです。
 
-Workers make our code and APIs in general run very fast for two main reasons:
+Workersは次の二つの理由でデプロイされた大抵のコードとAPIを高速に動作させます。
 
-- The code runs very near our users or customers. If I'm in Tokyo, a node in Narita will handle my request. If I'm in Fukuoka, my request will be likley handled by the node in Osaka instead, which is closer. This means the network latency is reduced by several oders of magnitude since the information does not need to travel to America and come back.
-- The second reason is that, unlike traditional serverless platforms, Workers have no cold start. It literally takes 0 milliseconds to start running your code.
+- コードはユーザーのすぐ近くで実行されます。例えば私が東京にいる場合、成田にあるノードが私のリクエストを処理します。もし福岡にいる場合はより近い大阪のノードによって処理されることでしょう。これは情報がアメリカに移動して戻ってくる必要がないため、ネットワークのレイテンシが数桁減ることを意味します。
+- 2つ目の理由は、これまでのサーバーレスプラットフォームとは異なり、Workersにはコールドスタートがないことです。コードの実行を開始するために、文字通りの「0ミリ秒」を必要とします。
 
-The code is very scalable because each worker can be spawned million of times, again with 0 milliseconds cold start.
+各ワーカーは「0ミリ秒のコールドスタート」で何百万回も生成される可能性があるため、コードは非常にスケーラブルです。
 
-Workers also provide location utilities such as user's country, city or even postal code, which unlocks many possibilities. You just need to inspect the request object in your API to access these properties.
+また、Workersはユーザーの国、都市、さらには郵便番号のような様々なロケーションユーティリティを提供していたりと、多くの可能性に満ちています。
+これらのプロパティにアクセスするためにはAPIでリクエストオブジェクトを検証することが必要なだけです。
 
 # 真のサーバーレスとは: Cloudflare Workers (2)
 
-You might think I'm done selling you workers but no, there are more goodies. Workers also provide:
+私がWorkersの魅力を語り尽くしたとあなたは思うかもしれませんが、さらによいものがあります。Workersは加えて以下のものを提供します。
 
-- A flexible edge cache. This means once our API handles a request, we can optionally choose to save the result so the next request directly gets a copy, which makes it even faster.
+- 柔軟なエッジキャッシュ。APIがリクエストを処理した際にオプションでその結果を保存することができます。そして、次のリクエストでは直接コピーを取得し処理をさらに高速化することができます。
+- 前にステートレス問題に触れたことを覚えていますか？ Workersはステートレスですが、ユーザーセッションや静的ファイル、他必要なものを保存可能な組み込みのグローバルのキーバリューストアにアクセスすることができます。
+- 最近、彼らはWebSocketのサポートを追加しました。普通であれば、コードの実行後にコネクションが閉じられるためステートレス関数はOPENなWebSocketコネクションを維持できません。しかしながら、Durable Objectsと呼ばれるサイドサービスのおかげで、OPENなWebSocketコネクションをグローバルに保存できるようになりました。これによって、たとえば、リアルタイムのビデオゲームやGoogleドキュメントのようなコラボレーションツールを構築できることを意味します。そして、それらはすべて、エンドユーザーの近くのエッジで実行されるのです。
+- もちろん、Cloudflareで実行されている場合、Workerはほとんどのサービスと十分に統合されているため、Cloudflareが提供する他のすべてのサービスにもアクセスできます。たとえば、ビルトインのDNS、分析、cronジョブ、セキュリティといったものです。万が一、DDOS攻撃を受けた場合でもCloudflareでボタンを押すだけでレート制限などを適用し、影響を軽減できます。
+- 大事なことを言い忘れましたが、Workersは通常、「従来の」サーバーレスプラットフォームよりも安価です。
 
-- Remember the stateless issue I mentioned earlier? Well, even though workers themselves are stateless, they have access to a built-in global Key-Value store where we can save user session, static files or anything we need.
-
-- Recently they added support for WebSockets. Generally, a stateless function shouldn't be able to store an open websocket connection -- because the connection would be closed after the code runs. However, thanks to a side service called Durable Objects, we can now save open WebSocket connections globally. This means we can build, for example, real time videogames or collaborative tools like Google Docs. And it all still runs at the edge, near the end user.
-
-- Of course, running at Cloudflare, we also get access to all the other services they provide because Workers are well integrated with most of them. For example, we have built-in DNS, analytics, cron jobs and security. If we have a DDOS attack we just need to press a button and Cloudflare will mitigate it by applying rate limits and whatnot.
-
-- Last but not least, workers are generally cheaper than traditional serverless platforms.
-
-Now, this is a lot of information but, what can we actually build with Workers?
+さて、ここまでWorkersをご紹介してきましたが、実際にWorkersを使って何を作れるでしょうか？
 
 # Workers の例
 
@@ -59,14 +56,14 @@ Now, this is a lot of information but, what can we actually build with Workers?
 
 # Workers の欠点
 
-So far we have seen a lot of benefits to using Cloudflare Workers. However, there are also some downsides:
+ここまで、Cloudflare Workersを使った様々なメリットを紹介してきましたが、いくつか欠点もあります。
 
-- Workers tend to follow Web APIs instead fo Node.js APIs. This means that there are a lot of NPM packages for backend that are not supported in the Worker environment, such as Stripe SDK or Auth0's JWT verification utilities. We need to use raw APIs or find utilities that rely on Web Standards instead of Node.js APIs.
-- Workers run in a very constrained environment. This means there are runtime limits such as maximum memory, CPU time, or the number of subrequests we can make. Not every application can run in this environment and we need to keep that in mind when building our apps.
-- Also, the developer experience is not that great yet compared to other providers, which might make debugging a bit harder, but they are improving.
-- The cumminity is still young so you might need to spend more time to learn how to do certain things.
+- Workersは、Node.js APIでなく、Web APIに従う傾向があります。これは、Stripe SDKやAuth0のJWT検証ユーティリティなど、Worker環境でサポートされていないバックエンド用のNPMパッケージが多数あることを意味します。生のAPIを使用するか、Node.js APIの代わりにWeb標準に依存するユーティリティを見つける必要があります。
+- Workersは非常に制約のある環境で実行されています。そのため、最大メモリ、CPU時間、または実行できるサブリクエストの数などの実行時の制限が発生します。すべてのアプリケーションがこの環境で実行できるわけではありません。アプリを作成するときは、このことを念頭に置く必要があります。
+- また、DX(Developer eXperience)は他のプロバイダーと比べてまだそれほど優れていないため、デバッグが少し難しくなる可能性があります。ただし、この点は徐々に改善されています。
+- Workersのコミュニティはまだまだ若いので、特定のことを行う方法を学ぶためにより多くの時間を費やす必要があるかもしれません。
 
-Now that we have seen what actually "deploying to the edge" means, by using Cloudflare Workers, let's have a look at Vite.
+ここまで実際の「エッジへのデプロイ」が何を意味するか、をCloudflare Workersを使うことでみてきました。続いては、Viteを見ていきましょう。
 
 # Vite
 
