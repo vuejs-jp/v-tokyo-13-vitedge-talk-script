@@ -70,20 +70,20 @@ Now that we have seen what actually "deploying to the edge" means, by using Clou
 
 # Vite
 
-You have probably heard of Vite. It is a new frontend tooling developed by the creator of Vue.js, Evan You.
-You can think of Webpack and Webpack-dev-server combined, but infinitely faster and easier to configure.
+Vite という名前について聞いてことがあるかもしれません。Vite は Vue.js の作者 Evan You によって開発された新しいフロントエンドツールです。
+Webpack そして Webpack-dev-server を組み合わせたものと考えていいですが、はるかに速く、そして設定も簡単です。
 
-Thanks to this, the developer experience when you create web apps with Vite is really good. Its default configuration values work for most applications and, if you need to modify the configuration, is still really simple. For example, if you need to use SASS or SCSS, just install their compilers and Vite will pick them automatically.
+このおかげで、Viteを使ってWebアプリケーションを作成する際のDXはとても良いものになっています。デフォルトの設定値はほとんどのアプリケーションに対応していますし、設定を変更する必要がある場合でも、とても簡単です。例えば、SASSやSCSSを使用する必要がある場合は、それらのコンパイラをインストールするだけで、Viteは自動的にそれらを選択します。
 
-Vite's development server starts almost instantly, and the same happens with its Hot Module Replacement, HMR. You save a file and you get the update right away in the browser.
+Viteの開発サーバーはほとんど瞬時に開始します。そして、Hot Module Replacement (HMR)も同様です。ファイルを保存するとすぐにブラウザでアップデートが表示されます。
 
-Apart from that, its community is flourishing. There are so many good developers creating plugins for everything you can imagine. Filesystem routing, components auto import, i18n precompilation, easy access to icons, and so on. You just need to install the pluign and import it in 1 line of code.
+それに加えて、Viteのコミュニティはとても活発です。多くの優秀な開発者が、想像できるすべてのもののためにプラグインを作っています。ファイルシステムのルーティング、コンポーネントの自動インポート、国際化のためのプリコンパイル、アイコンへの簡単なアクセス、などなど。プラグインをインストールして、1行のコードでインポートするだけでいいのです。
 
-Vite is framework agnostic but, of course, since its made by Evan You, you can imagine it works flawlessly with Vue.js.
+Viteはフレームワークに依存がありませんが、もちろん Evan You によって作られているため、Vue.js で完璧に動作することは想像に難くありません。
 
-And apart from that, one of the things I like the most is that Vite is really easy to extend. It exports most of its internal functions so we can easily create tools on top of it for handling WebSockets or Server Side Rendering.
+それとは別に、私が最も気に入っているのは、Viteがとても簡単に拡張できることです。內部関数のほとんどをエクスポートしているので、WebSocketやサーバーサイドレンダリングを扱うツールを簡単に作ることができます。
 
-And this is precisely what I've been working on during the last months. Running Vite SSR tooling at the edge, in Cloudflare Workers.
+そして、これこを私がこの数ヶ月間取り組んできたことなのです。Vite SSR ツールをエッジで Cloudflare Workersで実行しています。
 
 # Vitedge: エッジで動作する SSR (1)
 
