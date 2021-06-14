@@ -88,46 +88,47 @@ And this is precisely what I've been working on during the last months. Running 
 
 # Vitedge: エッジで動作する SSR (1)
 
-And that's what I've called Vitedge, which is just a Vite application that, when you build it and deploy it to a Cloudflare Worker, it can render the HTML for your page components at the edge, very near the end user. Even though that sounds complex, it is still as easy as developing a Single Page Application.
+そして、これを私はVitedgeと呼んでいますが、Viteアプリケーションを作ってそれをCouldflare Workersにデプロイすると、ページコンポーネントのHTMLをエンドユーザーに近いエッジでレンダリングすることができます。複雑に聞こえるかもしれませんが、それはシングルページアプリケーションの開発するとき同じくらい簡単です。
 
-Therefore, instead of uploading and serving a static `index.html` from the CDN, its the CDN node itself the one that renders the `index.html` file and caches at the edge it for the subsequent requests. So the next request will just get the file as if it was a static file.
+したがって、CDNから静的な`index.html`をアップロードして提供する代わりに、CNDノード自身が`index.html`ファイルをレンダリングし、次のリクエストのためにエッジにキャッシュします。そのため、次のリクエストでは、あたかも静的なファイルであるかのようにファイルを取得します。
 
 # Vitedge: エッジで動作する SSR (2)
 
-You can probably imagine some of the benefit sof this:
+おそらく、以下のようないくつかのメリットを想像できます:
 
-- Better loading times and SEO without slow builds and supporting dynamic content.
-- Great performance.
-- Configurable cache. This means that, if we know that our data (from a database or a content management system) has changed for a specific route, we can simply evict that route from cache and keep the others untouched. So the next request for that route will use fresh data.
-- Vitedge also provids a way to create API endpoints based on filesystem routes, which is really simple.
-- And of course, we have all the good DX that Vite brings.
+- より良いロード時間、遅いビルドなしによるSEO、動的なコンテンツをサポート
+- 素晴らしいパフォーマンス
+- 構成可能なキャッシュ、つまり、私達の（データベースやコンテンツ管理システムからの）データが特定のルートで変更されたことがわかっている場合は、そのルートをキャッシュから削除し、他のルートはそのままにしておくことができるのです。そのため、そのルートに対する次のリクエストは、新しいデータを使用することになります。
+- Vitedgeはファイルシステムによるルートに基づいたAPIエントリポイントを作成する方法も提供します。
+- そして、もちろん、Viteがもたらす良いDXもすべてあります。
 
-I also want to mention that, even though SSR can be good for many applications, it might not be a good fit for your specific project. SPA and static site generators can still be good choices depending on the project.
+SSRは多くのアプリケーションに適していいるかもしれまんが、特定のプロジェクトにおいては適していないかもしれないということも、私は伝えておきたいと思います。プロジェクトによっては、SPAと静的サイトジェネレーターは良い選択となるでしょう。
 
-OK, so let's see how we can install and use Vitedge in a Vite application.
+それでは、ViteアプリケーションにVitedgeをインストールして使用する方法を見てみましょう。
 
 # Vitedge: エッジで動作する SSR (3)
 
-If you are not familiar with Vite yet, a normal application looks like this. We have our `vite.config` file and a normal "source" folder for any Vue.js application, with page components, routes, the root component (App) and the main entry file for Vue apps.
+もし、まだViteに慣れていない方は、通常のアプリは次のようになっています。`vite.config`ファイルとVue.jsアプリケーション向けの通常の"source"フォルダがあり、ページコンポーネント、ルート、ルートコンポーネント(App)、そしてVueアプリ用のメインエントリファイルがあります。
 
-The way we install Vitedge is by simply adding its plugin to the Vite config, and modifying the entry point of the Vue application like this. Vitedge will call `createApp` or `createSsrApp` depending on the environment. In this main hook we can setup any Vue.js modules such as i18n, Vuex, Pinia and so on.
+Vitedgeをインストールする方法は、単純にそのプラグインをViteの設定ファイルに追加し、Vueアプリケーションのエントリポイントを次のように変更します。Vitedgeは環境に応じて、`createApp`または`createSsrApp`を呼び出します。このメインフックでは、i18n、Vuex、PiniaなどあらゆるVue.jsモジュールをセットアップすることができます。
 
-By default, just like in a Vue SPA, in Vitedge we also have a single entry point, instead of having 1 for the client and 1 for the server. This makes it easier to get started with SSR, although using 2 separate entry points is also supported in case you need it.
+デフォルトでは、VueのSPAのように、Vitedgeではクライアントそしてサーバー向けに1つのエントリポイントを持つ代わりに1つのエントリポイントを持ちます。これによりSSRを簡単に使い始めることができます。ただ、必要に応じて2つの独立したエントリポイントを使用することもサポートされています。
 
 # Vitedge: エッジで動作する SSR (4)
 
-Now, let's see how we can create a Page component that gets data from our API.
-In Vitedge, we place our API in a folder called `functions` next to the `source` folder for the frontend.
+それでは、APIからデータを取得するPageコンポーネントの作成方法について説明します。
+Vitedgeでは、フロントエンド向けに`source`フォルダの隣にある`functions`というフォルダにAPIを配置します。
 
-Here we have a simple Page component to show a Blog Post, and we put it in a route called "post" with path "/posts/:slug".
-You can see the Page component expects to get the Post data from its props. And then it uses that data to write some meta tags using `vueuse/head` and it displays some of its content in the DOM.
+ここでは、ブログ記事を表示するためのシンプルなPageコンポーネントを用意し、"post"というルートに"/posts/:slug"というパスで配置しています。
+propsからブログポストデータを取得するために、ページコンポーネントを期待しているのが分かります。そして、それから`vueuse/head`を使っていくつかのmetaタグを書くためにそのデータを使い、DOMにいくつかのコンテンツを表示しています。
 
-Now, how do we get to provide this Post object to the Page component? Well, if you remember, the route for this page is called `post`. We just need to create a new file under "functions/props/" directory with the same name of that route, "functions/props/post.ts" (TS or JS). This function here will be called everytime we access this route in our browser, and it will pass its result to the Page component as props. You can see that the route expects a "slug" parameter, and this is actually provided to the props function in its arguments.
+さて、このPostオブジェクトをどのようにしてページコンポーネントに提供するのでしょうか？覚えていると思いますが、このページのルートは `post`と呼ばれています。"functions/props/"ディレクトリ配下に、ルートと同じ名前の新しいファイル "functions/props/post.ts"（TSまたはJS）を作成する必要があります。この関数は、ブラウザからこのルートにアクセスするたびに呼び出され、その結果をpropsとしてページコンポーネントに渡します。ルートは "slug"パラメータを期待しており、これは実際にprops関数の引数で提供されていることがわかります。
 
-Here, we can use this "slug" parameter to get the post information from our database or our content management system using `fetch`, and the return the result.
+ここでは、この"slug"パラメータを使って、データベースやコンテンツマネジメントシステムから`fetch`で投稿情報を取得し、その結果を返すことができます。
 
-As simple as that. This function code is not bundled in the web application so you can have here any private information such as API keys. Also, notice that we are specifying a cache value here. This means that the rendered HTML for this page component will be cached at the edge for this amount of seconds. If we notice that our CMS or DB data for this post has changed, we can make a request to Cloudflare's cache and remove this information, so the next request will use fresh data.
+とてもシンプルですね。この関数コードはWebアプリケーションにバンドルされていないので、APIキーなどのプライベートな情報をここに持つことができます。また、ここではキャッシュ値を指定していることに注目してください。これは、このページコンポーネントのレンダリングされたHTMLが、この秒数の間、エッジにキャッシュされることを意味します。この記事のCMSやDBのデータが変更されたことに気づいたら、Cloudflareのキャッシュにリクエストしてこの情報を削除し、次のリクエストで新鮮なデータを使用できるようにします。
 
-Notice that we also have here some files such as `.env` and sitemap. The `.env` file simply stores environment variables that are available to the API, whereas the sitemap file is just like this function here (props handler) but it will be called any time we reach `/sitemap.xml` or `/sitemap.txt` in the browser so we can return a dynamic sitemap that depends on our DB or CMS data. And of course it can also be cached. Instead of sitemap, we could have a `robots` file or even a `graphql` file where we setup a GraphQL server.
+ここには、`.env`やsitemapといったファイルがあることに注目してください。
+`.env`ファイルには、APIで利用可能な環境変数が格納されています。一方、sitemapファイルは、この関数(propsハンドラ)のようなものですが、ブラウザで`/sitemap.xml`や`/sitemap.txt`にアクセスしたときに呼び出されるので、DBやCMSのデータに依存した動的なサイトマップを返すことができます。もちろん、キャッシュにも対応しています。サイトマップの代わりに、`robots`ファイルや、GraphQLサーバーをセットアップする`graphql`ファイルを用意することもできます。
 
-And that's all for today. If you want to know more about Vitedge, please have a look at https://vitedge.js.org
+今日の発表はになります。Vitedgeについてもっと知りたい方は、https://vitedge.js.org をご覧ください。
